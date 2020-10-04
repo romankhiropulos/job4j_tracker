@@ -1,12 +1,14 @@
 package ru.job4j.tracker.model;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class Item implements Comparable<Item> {
     private String id;
     private String name;
 
     public Item(String name) {
+        this.id = UUID.randomUUID().toString();
         this.name = name;
     }
 

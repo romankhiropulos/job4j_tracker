@@ -2,7 +2,7 @@ package ru.job4j.tracker.action;
 
 import ru.job4j.tracker.model.Item;
 import ru.job4j.tracker.input.Input;
-import ru.job4j.tracker.storage.Tracker;
+import ru.job4j.tracker.storage.Store;
 
 public class FindByIdAction implements UserAction {
     @Override
@@ -11,7 +11,7 @@ public class FindByIdAction implements UserAction {
     }
 
     @Override
-    public boolean execute(Input input, Tracker tracker) {
+    public boolean execute(Input input, Store tracker) {
         String id = input.askStr("Enter the item id: ");
         Item item = tracker.findById(id);
         if (item != null) {

@@ -4,36 +4,27 @@ import ru.job4j.tracker.model.Item;
 
 import java.util.*;
 
-public class Tracker {
+public class MemTracker implements Store {
     private final List<Item> items = new ArrayList<>();
 
+    @Override
+    public void init() {
+
+    }
+
+    @Override
     public Item add(Item item) {
-        item.setId(this.generateId());
         this.items.add(item);
         return item;
     }
 
-    private String generateId() {
-        Random rnd = new Random();
-        return String.valueOf(rnd.nextLong() + System.currentTimeMillis());
-    }
-
-    private int indexOf(String id) {
-        int rsl = -1;
-        for (int i = 0; i < this.items.size(); i++) {
-            if (this.items.get(i).getId().equals(id)) {
-                rsl = i;
-                break;
-            }
-        }
-        return rsl;
-    }
-
+    @Override
     public Item findById(String id) {
         int index = indexOf(id);
         return index != -1 ? this.items.get(index) : null;
     }
 
+    @Override
     public List<Item> findByName(String key) {
         List<Item> items = new ArrayList<>();
         int index = 0;
@@ -46,10 +37,12 @@ public class Tracker {
         return items;
     }
 
+    @Override
     public List<Item> findAll() {
         return this.items;
     }
 
+    @Override
     public boolean replace(String id, Item item) {
         boolean result = false;
         int index = indexOf(id);
@@ -61,6 +54,7 @@ public class Tracker {
         return result;
     }
 
+    @Override
     public boolean delete(String id) {
         boolean result = false;
         int index = indexOf(id);
@@ -69,5 +63,21 @@ public class Tracker {
             result = true;
         }
         return result;
+    }
+
+    @Override
+    public void close() throws Exception {
+
+    }
+
+    private int indexOf(String id) {
+        int rsl = -1;
+        for (int i = 0; i < this.items.size(); i++) {
+            if (this.items.get(i).getId().equals(id)) {
+                rsl = i;
+                break;
+            }
+        }
+        return rsl;
     }
 }

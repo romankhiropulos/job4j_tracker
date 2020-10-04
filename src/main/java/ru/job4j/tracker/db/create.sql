@@ -1,4 +1,3 @@
-
 DROP TABLE IF EXISTS items;
 
 CREATE TABLE items

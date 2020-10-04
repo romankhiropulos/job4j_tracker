@@ -5,20 +5,24 @@ import ru.job4j.tracker.input.ConsoleInput;
 import ru.job4j.tracker.input.Input;
 import ru.job4j.tracker.input.ValidateInput;
 import ru.job4j.tracker.model.Item;
-import ru.job4j.tracker.storage.Tracker;
+import ru.job4j.tracker.storage.MemTracker;
+import ru.job4j.tracker.storage.SqlTracker;
+import ru.job4j.tracker.storage.Store;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class StartUI {
 
-    public static void createItem(Input input, Tracker tracker) {
+    public static void createItem(Input input, Store tracker) {
         System.out.println("==== Create a new Item ====");
         String name = input.askStr("Enter name: ");
         Item item = new Item(name);
         tracker.add(item);
     }
 
-    public static void showItems(Tracker tracker) {
+    public static void showItems(Store tracker) {
         System.out.println("==== Show all items ====");
         List<Item> items = tracker.findAll();
         if (items.size() != 0) {
@@ -30,7 +34,7 @@ public class StartUI {
         }
     }
 
-    public static void editItem(Input input, Tracker tracker) {
+    public static void editItem(Input input, Store tracker) {
         System.out.println("==== Edit item ====");
         String id = input.askStr("Enter the item id: ");
         String name = input.askStr("Enter a new item name: ");
@@ -41,7 +45,7 @@ public class StartUI {
         }
     }
 
-    public static void deleteItem(Input input, Tracker tracker) {
+    public static void deleteItem(Input input, Store tracker) {
         System.out.println("==== Delete item ====");
         String id = input.askStr("Enter the item id: ");
         if (tracker.delete(id)) {
@@ -51,7 +55,7 @@ public class StartUI {
         }
     }
 
-    public static void findItemById(Input input, Tracker tracker) {
+    public static void findItemById(Input input, Store tracker) {
         System.out.println("==== Find item by Id ====");
         String id = input.askStr("Enter the item id: ");
         Item item = tracker.findById(id);
@@ -62,7 +66,7 @@ public class StartUI {
         }
     }
 
-    public static void findItemByName(Input input, Tracker tracker) {
+    public static void findItemByName(Input input, Store tracker) {
         System.out.println("==== Find items by name ====");
         String name = input.askStr("Enter a name: ");
         List<Item> items = tracker.findByName(name);
@@ -78,19 +82,26 @@ public class StartUI {
     public static void main(String[] args) {
         Input input = new ConsoleInput();
         Input validate = new ValidateInput(input);
-        Tracker tracker = new Tracker();
-        List<UserAction> actions = new ArrayList<>();
-        actions.add(new CreateAction());
-        actions.add(new ShowAction());
-        actions.add(new EditAction());
-        actions.add(new DeleteAction());
-        actions.add(new FindByIdAction());
-        actions.add(new FindByNameAction());
-        actions.add(new ExitAction());
-        new StartUI().init(validate, tracker, actions);
+//        Store tracker = new MemTracker();
+        try (Store tracker = new SqlTracker()) {
+            new StartUI().init(validate, tracker, getActions());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public void init(Input input, Tracker tracker, List<UserAction> actions) {
+    private static List<UserAction> getActions() {
+        return new ArrayList<>(Arrays
+                .asList(new CreateAction(),
+                        new ShowAction(),
+                        new EditAction(),
+                        new DeleteAction(),
+                        new FindByIdAction(),
+                        new FindByNameAction(),
+                        new ExitAction()));
+    }
+
+    public void init(Input input, Store tracker, List<UserAction> actions) {
         boolean run = true;
         while (run) {
             showMenu(actions);

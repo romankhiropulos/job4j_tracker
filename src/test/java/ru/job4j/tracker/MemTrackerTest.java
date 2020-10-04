@@ -2,7 +2,8 @@ package ru.job4j.tracker;
 
 import org.junit.Test;
 import ru.job4j.tracker.model.Item;
-import ru.job4j.tracker.storage.Tracker;
+import ru.job4j.tracker.storage.MemTracker;
+
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,10 +12,10 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 
-public class TrackerTest {
+public class MemTrackerTest {
     @Test
     public void whenAddNewItemThenTrackerHasSameItem() {
-        Tracker tracker = new Tracker();
+        MemTracker tracker = new MemTracker();
         Item item = new Item("test1");
         tracker.add(item);
         Item result = tracker.findById(item.getId());
@@ -23,7 +24,7 @@ public class TrackerTest {
 
     @Test
     public void whenTrackerFindByName() {
-        Tracker tracker = new Tracker();
+        MemTracker tracker = new MemTracker();
         tracker.add(new Item("test1"));
         Item item1 = new Item("test2");
         tracker.add(item1);
@@ -36,7 +37,7 @@ public class TrackerTest {
 
     @Test
     public void whenTrackerFindAll() {
-        Tracker tracker = new Tracker();
+        MemTracker tracker = new MemTracker();
         Item item1 = new Item("test1");
         Item item2 = new Item("test2");
         Item item3 = new Item("test3");
@@ -49,7 +50,7 @@ public class TrackerTest {
 
     @Test
     public void whenReplace() {
-        Tracker tracker = new Tracker();
+        MemTracker tracker = new MemTracker();
         Item bug = new Item("Bug");
         tracker.add(bug);
         String id = bug.getId();
@@ -60,7 +61,7 @@ public class TrackerTest {
 
     @Test
     public void whenDelete() {
-        Tracker tracker = new Tracker();
+        MemTracker tracker = new MemTracker();
         Item bug = new Item("Bug");
         tracker.add(bug);
         String id = bug.getId();

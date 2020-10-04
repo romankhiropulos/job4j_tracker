@@ -4,7 +4,7 @@ import org.junit.Test;
 import ru.job4j.tracker.action.FindByNameAction;
 import ru.job4j.tracker.input.StubInput;
 import ru.job4j.tracker.model.Item;
-import ru.job4j.tracker.storage.Tracker;
+import ru.job4j.tracker.storage.MemTracker;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -20,7 +20,7 @@ public class FindByNameActionTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         PrintStream standart = System.out;
         System.setOut(new PrintStream(out));
-        Tracker tracker = new Tracker();
+        MemTracker tracker = new MemTracker();
         Item item = new Item("new item");
         tracker.add(item);
         FindByNameAction action = new FindByNameAction();
