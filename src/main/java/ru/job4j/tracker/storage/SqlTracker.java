@@ -41,7 +41,7 @@ public class SqlTracker implements Store {
     @Override
     public Item add(Item item) {
         try (PreparedStatement ps = cn
-                .prepareStatement("INSERT INTO items (0name) VALUES (?)")) {
+                .prepareStatement("INSERT INTO items (name) VALUES (?)")) {
             ps.setString(1, item.getName());
             ps.execute();
         } catch (SQLException throwable) {
@@ -52,13 +52,31 @@ public class SqlTracker implements Store {
 
     @Override
     public boolean replace(String id, Item item) {
-        return false;
+        try (PreparedStatement ps = cn
+                .prepareStatement("UPDATE items SET name = ? WHERE id = ?")) {
+            ps.setString(1, item.getName());
+            ps.setInt(2, Integer.parseInt(id));
+            if (ps.executeUpdate() != 1) {
+                return false;
+            }
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+        return true;
     }
 
     @Override
     public boolean delete(String id) {
-
-        return false;
+        try (PreparedStatement ps = cn
+                .prepareStatement("DELETE FROM items WHERE id = ?")) {
+            ps.setInt(1, Integer.parseInt(id));
+            if (ps.executeUpdate() == 0) {
+                return false;
+            }
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+        return true;
     }
 
     @Override
@@ -78,11 +96,33 @@ public class SqlTracker implements Store {
 
     @Override
     public List<Item> findByName(String key) {
-        return null;
+        List<Item> items = new ArrayList<>();
+        try (PreparedStatement ps = cn
+                .prepareStatement("SELECT * FROM items WHERE name = ? ORDER BY name, id")) {
+            ps.setString(1, key);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                items.add(new Item(String.valueOf(rs.getInt("id")), rs.getString("name")));
+            }
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+        return items;
     }
 
     @Override
     public Item findById(String id) {
-        return null;
+        Item item = null;
+        try (PreparedStatement ps = cn
+                .prepareStatement("SELECT * FROM items WHERE id = ?")) {
+            ps.setInt(1, Integer.parseInt(id));
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                item = new Item(id, rs.getString("name"));
+            }
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+        return item;
     }
 }
