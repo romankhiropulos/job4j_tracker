@@ -3,10 +3,8 @@ package ru.job4j.tracker.storage;
 import ru.job4j.tracker.model.Item;
 
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -43,9 +41,8 @@ public class SqlTracker implements Store {
     @Override
     public Item add(Item item) {
         try (PreparedStatement ps = cn
-                .prepareStatement("INSERT INTO items (uuid, full_name) VALUES (?,?)")) {
-            ps.setString(1, item.getId());
-            ps.setString(2, item.getName());
+                .prepareStatement("INSERT INTO items (0name) VALUES (?)")) {
+            ps.setString(1, item.getName());
             ps.execute();
         } catch (SQLException throwable) {
             throwable.printStackTrace();
@@ -60,12 +57,23 @@ public class SqlTracker implements Store {
 
     @Override
     public boolean delete(String id) {
+
         return false;
     }
 
     @Override
     public List<Item> findAll() {
-        return null;
+        List<Item> items = new ArrayList<>();
+        try (PreparedStatement ps = cn
+                .prepareStatement("SELECT * FROM items ORDER BY name, id")) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                items.add(new Item(String.valueOf(rs.getInt("id")), rs.getString("name")));
+            }
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+        return items;
     }
 
     @Override

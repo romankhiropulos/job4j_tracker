@@ -1,14 +1,20 @@
 package ru.job4j.tracker.model;
 
 import java.util.Objects;
-import java.util.UUID;
+import java.util.Random;
 
 public class Item implements Comparable<Item> {
     private String id;
     private String name;
 
     public Item(String name) {
-        this.id = UUID.randomUUID().toString();
+        this(generateId(), name);
+    }
+
+    public Item(String id, String name) {
+        Objects.requireNonNull(id, "id must not be null");
+        Objects.requireNonNull(name, "name must not be null");
+        this.id = id;
         this.name = name;
     }
 
@@ -18,6 +24,11 @@ public class Item implements Comparable<Item> {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    private static String generateId() {
+        Random rnd = new Random();
+        return String.valueOf(rnd.nextLong() + System.currentTimeMillis());
     }
 
     public String getName() {
