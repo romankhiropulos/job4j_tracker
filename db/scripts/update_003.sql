@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS items
+(
+    id   TEXT PRIMARY KEY,
+    name TEXT
+);
+
+ALTER TABLE items ALTER COLUMN name SET NOT NULL ;

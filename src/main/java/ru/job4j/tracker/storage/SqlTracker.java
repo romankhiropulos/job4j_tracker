@@ -45,8 +45,9 @@ public class SqlTracker implements Store {
     @Override
     public Item add(Item item) {
         try (PreparedStatement ps = cn
-                .prepareStatement("INSERT INTO items (name) VALUES (?)")) {
-            ps.setString(1, item.getName());
+                .prepareStatement("INSERT INTO items (id, name) VALUES (?, ?)")) {
+            ps.setString(1, item.getId());
+            ps.setString(2, item.getName());
             ps.execute();
         } catch (SQLException throwable) {
             throwable.printStackTrace();
@@ -59,7 +60,7 @@ public class SqlTracker implements Store {
         try (PreparedStatement ps = cn
                 .prepareStatement("UPDATE items SET name = ? WHERE id = ?")) {
             ps.setString(1, item.getName());
-            ps.setInt(2, Integer.parseInt(id));
+            ps.setString(2, id);
             if (ps.executeUpdate() != 1) {
                 return false;
             }
@@ -73,7 +74,7 @@ public class SqlTracker implements Store {
     public boolean delete(String id) {
         try (PreparedStatement ps = cn
                 .prepareStatement("DELETE FROM items WHERE id = ?")) {
-            ps.setInt(1, Integer.parseInt(id));
+            ps.setString(1, id);
             if (ps.executeUpdate() == 0) {
                 return false;
             }
@@ -90,7 +91,7 @@ public class SqlTracker implements Store {
                 .prepareStatement("SELECT * FROM items ORDER BY name, id")) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                items.add(new Item(String.valueOf(rs.getInt("id")), rs.getString("name")));
+                items.add(new Item(String.valueOf(rs.getString("id")), rs.getString("name")));
             }
         } catch (SQLException throwable) {
             throwable.printStackTrace();
@@ -102,11 +103,11 @@ public class SqlTracker implements Store {
     public List<Item> findByName(String key) {
         List<Item> items = new ArrayList<>();
         try (PreparedStatement ps = cn
-                .prepareStatement("SELECT * FROM items WHERE name = ? ORDER BY name, id")) {
+                .prepareStatement("SELECT * FROM items WHERE name = ? ORDER BY name")) {
             ps.setString(1, key);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                items.add(new Item(String.valueOf(rs.getInt("id")), rs.getString("name")));
+                items.add(new Item(String.valueOf(rs.getString("id")), rs.getString("name")));
             }
         } catch (SQLException throwable) {
             throwable.printStackTrace();
@@ -119,7 +120,7 @@ public class SqlTracker implements Store {
         Item item = null;
         try (PreparedStatement ps = cn
                 .prepareStatement("SELECT * FROM items WHERE id = ?")) {
-            ps.setInt(1, Integer.parseInt(id));
+            ps.setString(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 item = new Item(id, rs.getString("name"));
